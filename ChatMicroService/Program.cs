@@ -1,4 +1,9 @@
+using Application.Interface;
+using Application.UseCase;
+using ChatAppWithSignalR.Api.Helpers;
+using Infrastructure.Persistance;
 using Infrastructure.Persistence;
+using Infrastructure.Query;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +40,15 @@ else
 Console.WriteLine(connectionString);
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
+builder.Services.AddDbContext<ChatAppContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration["ConnectionString"]);
+});
+
+builder.Services.AddTransient<IUserFunction, UserFunction>();
+builder.Services.AddTransient<IUserFriendFunction, UserFriendFunction>();
+builder.Services.AddTransient<IMessageFunction, MessageFunction>();
+builder.Services.AddScoped<UserOperator>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
