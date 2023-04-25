@@ -1,5 +1,6 @@
 ﻿using Application.Interface;
 using Application.Reponsive;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Chat.Controllers
 {
@@ -9,12 +10,11 @@ namespace Chat.Controllers
     public class MessageController : Controller
     {
         IMessageFunction _messageFunction;
-        IUserFunction _userFunction;
 
-        public MessageController(IMessageFunction messageFunction, IUserFunction userFunction)
+        public MessageController(IMessageFunction messageFunction)
         {
             _messageFunction = messageFunction;
-            _userFunction = userFunction;
+
         }
 
         [HttpPost("Initialize")]
@@ -22,7 +22,6 @@ namespace Chat.Controllers
         {
             var response = new MessageInitalizeResponse
             {
-                FriendInfo = _userFunction.GetUserById(request.ToUserId),
                 Messages = await _messageFunction.GetMessages(request.FromUserId, request.ToUserId)
             };
 
