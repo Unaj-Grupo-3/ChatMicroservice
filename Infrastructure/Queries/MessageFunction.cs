@@ -26,7 +26,7 @@ namespace Application.UseCase
                 IsRead = false
             };
 
-            _chatAppContext.Message.Add(entity);
+            _chatAppContext.Messages.Add(entity);
             var result = await _chatAppContext.SaveChangesAsync();
 
             return result;
@@ -36,7 +36,7 @@ namespace Application.UseCase
         {
             var result = new List<LastestMessage>();
 
-            var userFriends = await _chatAppContext.Chat
+            var userFriends = await _chatAppContext.Chats
                 .Where(x => x.UserId1 == userId || x.UserId2 == userId ).ToListAsync();
 
             foreach (var userFriend in userFriends)
