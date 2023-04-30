@@ -19,7 +19,7 @@ namespace Infrastructure.Persistence
                 entity.Property(c => c.Id).ValueGeneratedOnAdd();
                 entity.Property(c => c.UserId1).IsRequired();
                 entity.Property(c => c.UserId2).IsRequired();
-                entity.Property(c => c.CreatedAt).ValueGeneratedOnAdd();
+                entity.Property(c => c.CreatedAt).HasDefaultValue(DateTime.Now);
                 entity.Property(c => c.UpdatedAt).ValueGeneratedOnUpdate().HasDefaultValue(DateTime.Now);
             });
 
