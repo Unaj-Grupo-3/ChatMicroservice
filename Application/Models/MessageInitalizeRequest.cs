@@ -2,7 +2,7 @@
 {
     public class MessageInitalizeRequest
     {
-        public int FromUserId { get; set; }
-        public int ToUserId { get; set; }
+        public int pageSize { get; set; }
+        public int pageIndex { get; set; }
     }
 }
