@@ -1,6 +1,4 @@
-﻿
-
-using Application.Interface;
+﻿using Application.Interface;
 using Domain.Entities;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -9,22 +7,28 @@ namespace Infrastructure.Queries
 {
     public class ChatQueries : IChatQueries
     {
-        private readonly ChatAppContext _chatAppContext;
-        public ChatQueries(ChatAppContext chatAppContext)
+        private readonly ChatAppContext _context;
+
+        public ChatQueries(ChatAppContext context)
         {
-            _chatAppContext = chatAppContext;
+            _context = context;
         }
-        public async Task<List<Chat>> GetListChat(int userId)
+
+        public async Task<Chat> GetChatById(int id)
         {
-            var entities = await _chatAppContext.Chats
-                .Where(x => x.UserId1 == userId)
-                .ToListAsync();
+            Chat chat = await _context.Chats.Include(x => x.Messages.OrderBy(m => m.SendDateTime))
+                                            .SingleOrDefaultAsync(x => x.Id == id);
 
-            //    var result = entities.Select(x => _userFunction.GetUserById(x.FriendId));
+            return chat;
+        }
 
-            //    if (result == null) result = new List<User>();
+        public async Task<IList<Chat>> GetChatsByUserId(int userId)
+        {
+            IList<Chat> chats = await _context.Chats.Include(x => x.Messages.OrderBy(m => m.SendDateTime))
+                                                    .Where(x => x.UserId1 == userId || x.UserId2 == userId)
+                                                    .ToListAsync();
 
-            return entities;
+            return chats;
         }
     }
 }

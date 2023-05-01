@@ -2,7 +2,8 @@
 {
     public class MessageInitalizeRequest
     {
-        public int pageSize { get; set; }
-        public int pageIndex { get; set; }
+        public int PageSize { get; set; }
+        public int PageIndex { get; set; }
+        public int ChatId { get; set; }
     }
 }

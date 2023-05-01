@@ -23,9 +23,9 @@ namespace Application.UseCases
         public async Task<int> GetMessagesLong(int chatId)
         { int count = 0;
             var messages = await _queries.GetListMessagesId(chatId);
-            if (messages == null)
+            if (messages != null)
             {
-                count = messages.Max(x => x.Id); 
+                count = messages.Count();
                 return count;
             }
             else

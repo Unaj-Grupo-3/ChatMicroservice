@@ -15,14 +15,14 @@ namespace Chat.Controllers
     {
         private readonly IMessageServices _messageFunction;
         private readonly ChatAppContext _chatAppContext;
-        public MessageController(IMessageServices messageFunction,ChatAppContext chatAppContext)
+        public MessageController(IMessageServices messageFunction, ChatAppContext chatAppContext)
         {
             _messageFunction = messageFunction;
             _chatAppContext = chatAppContext;
         }
 
-        [HttpGet({)]  
-        public async Task<ActionResult> Initialize([FromQuery] MessageInitalizeRequest request)
+        [HttpGet("{id}")]  
+        public async Task<ActionResult> Initialize([FromQuery] MessageInitalizeRequest request,int id)
         {
             try 
             {
@@ -33,10 +33,10 @@ namespace Chat.Controllers
                 //}
                 var response = new MessageInitalizeResponse
                 {
-                  PageSize = request.pageSize,
-                  PageIndex = request.pageIndex,
-                  Messages = await _messageFunction.GetMessages(request.pageSize, request.pageIndex, request.chatId),
-                  TotalItems = await _messageFunction.GetMessagesLong(request.chatId)
+                  PageSize = request.PageSize,
+                  PageIndex = request.PageIndex,
+                  Messages = await _messageFunction.GetMessages(request.PageSize, request.PageIndex,request.ChatId),
+                  TotalItems = await _messageFunction.GetMessagesLong(id)
                 };
                 return Ok(response);
             }
