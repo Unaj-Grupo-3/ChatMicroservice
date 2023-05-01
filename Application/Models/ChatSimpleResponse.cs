@@ -6,6 +6,6 @@ namespace Application.Models
     {
         public int User2Id { get; set; }
         public int ChatId { get; set; }
-        public MessageResponse? LatestMesage { get; set; }
+        public MessageResponse? LatestMessage { get; set; }
     }
 }

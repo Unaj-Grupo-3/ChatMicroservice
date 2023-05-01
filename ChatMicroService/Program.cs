@@ -1,6 +1,7 @@
 using Application.Interface;
 using Application.Interfaces;
 using Application.UseCases;
+using ChatMicroService.Hubs;
 using Infrastructure.Commands;
 using Infrastructure.Persistence;
 using Infrastructure.Queries;
@@ -16,10 +17,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddCors(policy =>
+builder.Services.AddCors(options =>
 {
-    policy.AddDefaultPolicy(options => options.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
-
+    options.AddPolicy("CorsPolicy", builder =>
+    {
+        builder
+            .WithOrigins("http://127.0.0.1:5500") // Reemplaza esto con el origen correcto de tu solicitud
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -64,6 +71,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+
+            // If the request is for our hub...
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                // Read the token out of the query string
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 
 string connectionString = builder.Configuration["ConnectionString"];
@@ -85,6 +109,8 @@ builder.Services.AddTransient<IChatServices, ChatServices>();
 
 builder.Services.AddTransient<ITokenServices, TokenServices>();
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -96,12 +122,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors();
+app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<ChatHub>("/chathub");
 
 app.Run();
