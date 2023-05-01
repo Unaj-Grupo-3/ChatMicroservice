@@ -93,7 +93,7 @@ namespace Application.UseCases
 
                 if (chat.Messages.Count > 0)
                 {
-                    var message = chat.Messages[0];
+                    var message = chat.Messages[chat.Messages.Count - 1];
                     messageResponse.Id = message.Id;
                     messageResponse.Content = message.Content;
                     messageResponse.IsRead = message.IsRead;
@@ -106,7 +106,7 @@ namespace Application.UseCases
                 {
                     ChatId = chat.Id,
                     User2Id = chat.UserId1 == userId ? chat.UserId2 : chat.UserId1,
-                    LatestMesage = messageResponse.Id == 0 ? null : messageResponse,
+                    LatestMessage = messageResponse.Id == 0 ? null : messageResponse,
                 };
  
                 response.Add(chatResponse);

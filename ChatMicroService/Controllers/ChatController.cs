@@ -48,11 +48,23 @@ namespace Chat.Controllers
 
                 var response = await _chatServices.GetChatById(id);
 
+                if (response == null)
+                {
+                    return new JsonResult(new { Message = $"No existe un chat con el id {id}" }) { StatusCode = 404 };
+                }
+
                 if ( !_tokenServices.ValidateUserId(identity,response.User1Id) & !_tokenServices.ValidateUserId(identity, response.User2Id))
                 {
                     return new JsonResult(new { Message = "No esta autorizado a ver este chat" }) { StatusCode = 403 };
                 }
-                 
+                var userId = int.Parse(identity.Claims.FirstOrDefault(x => x.Type == "UserId").Value);
+
+                if (response.User1Id != userId)
+                {
+                    response.User2Id = response.User1Id;
+                    response.User1Id = userId;
+                }
+
                 // Se llama al MicroServicio User para ver al otro usuario.
                 // Se mapea a cada user por sus ids.
 
