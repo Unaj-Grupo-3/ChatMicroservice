@@ -2,6 +2,10 @@
 using Application.Interfaces;
 using Application.Models;
 using Application.Reponsive;
+using ChatMicroService.Helpers;
+using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 
@@ -20,9 +24,33 @@ namespace ChatMicroService.Hubs
             _messageServices = messageServices;
         }
 
+        [Authorize]
+        public async Task ConnectionOn()
+        {
+            ClaimsPrincipal user = Context.User;
+            Claim userIdClaim = user.FindFirst("UserId");
+            int userId = int.Parse(userIdClaim.Value);
+
+            string connectionId = Context.ConnectionId;
+
+            if (ConnectionHandler.ConnectedIds.ContainsKey(userId))
+            {
+                // Implementar cerrar la sesion.
+                string connectionIdOld = ConnectionHandler.ConnectedIds[userId];
+
+                ConnectionHandler.ConnectedIds[userId] = connectionId;
+
+                await Clients.Clients(connectionIdOld).SendAsync("Logout");
+            }
+            else
+            {
+                ConnectionHandler.ConnectedIds.Add(userId, connectionId);
+            }   
+        }
+
+        [Authorize]
         public async Task SendMessage(int chatId, string message)
         {
-
             // Ejemplo de uso del token
             ClaimsPrincipal user = Context.User;
             Claim userIdClaim = user.FindFirst("UserId");
@@ -34,7 +62,7 @@ namespace ChatMicroService.Hubs
 
             if (userId != responseChat.User1Id & userId != responseChat.User2Id)
             {
-                await Clients.All.SendAsync("ErrorSendMessage", "No puede acceder a este chat");
+                await Clients.Caller.SendAsync("ErrorSendMessage", "No puede acceder a este chat");
             }
 
             if (responseChat.User1Id != userId)
@@ -50,10 +78,19 @@ namespace ChatMicroService.Hubs
                 Content = message
             };
 
-           MessageResponse response = await _messageServices.CreateMessage(messageRequest);
+            MessageResponse response = await _messageServices.CreateMessage(messageRequest);
 
-            
-            await Clients.All.SendAsync("ReceiveMessage", chatId, response);
+            if (ConnectionHandler.ConnectedIds.ContainsKey(responseChat.User2Id))
+            {
+                IReadOnlyList<string> usersToSend = new List<string>() { Context.ConnectionId, ConnectionHandler.ConnectedIds[responseChat.User2Id] };
+
+                await Clients.Clients(usersToSend).SendAsync("ReceiveMessage",chatId, response);
+            }
+            else
+            {
+                await Clients.Caller.SendAsync("ReceiveMessage", chatId, response);
+            }
+
         }
     }
 }
