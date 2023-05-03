@@ -1,8 +1,13 @@
 ﻿
+using Application.Models;
+using Application.Reponsive;
+using Domain.Entities;
+
 namespace Application.Interface
 {
     public interface IMessageCommands
     {
-        Task<int> AddMessage(int fromUserId, int toUserId, string message);
+        Task<Message> CreateMessage(Message message);
+        Task<Message> UpdateIsReadMessage(int messageId);
     }
 }

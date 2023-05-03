@@ -3,30 +3,37 @@
 using Application.Interface;
 using Domain.Entities;
 using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Commands
 {
     public class MessageCommands : IMessageCommands
     {
-        private readonly ChatAppContext _chatAppContext;
-        public MessageCommands(ChatAppContext chatAppContext)
+        private readonly ChatAppContext _context;
+
+        public MessageCommands(ChatAppContext context) 
         {
-            _chatAppContext = chatAppContext;
+            _context = context;
         }
-        public async Task<int> AddMessage(int fromUserId, int toUserId, string message)
+
+        public async Task<Message> CreateMessage(Message message)
         {
-            var entity = new Message
-            {
-                FromUserId = fromUserId,
-                Content = message,
-                SendDateTime = DateTime.Now,
-                IsRead = false
-            };
+            _context.Messages.Add(message);
 
-            _chatAppContext.Messages.Add(entity);
-            var result = await _chatAppContext.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
-            return result;
+            return message;
+        }
+
+        public async Task<Message> UpdateIsReadMessage(int messageId)
+        {
+            Message updated = await _context.Messages.FirstOrDefaultAsync(x => x.Id == messageId);  
+
+            updated.IsRead = true;
+
+            await _context.SaveChangesAsync();
+
+            return updated;
         }
     }
 }

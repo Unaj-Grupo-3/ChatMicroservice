@@ -1,16 +1,62 @@
 ﻿using Application.Interface;
+using Application.Models;
+using Application.Reponsive;
+using Domain.Entities;
 using Application.Reponsive;
 
 namespace Application.UseCases
 {
-    public class MessageServices : IMessageServices
+    public class MessageServices : IMessageQuery
     {
         private readonly IMessageCommands _commands;
         private readonly IMessageQueries _queries;
-        public MessageServices(IMessageQueries queries,IMessageCommands commands) 
+
+        public MessageServices(IMessageCommands messageCommands, IMessageQueries messageQueries) 
         {
-            _commands = commands;
-            _queries = queries;
+            _commands = messageCommands;
+            _queries = messageQueries;
+        }
+
+        public async Task<MessageResponse> CreateMessage(MessageRequest request)
+        {
+            Message message = new Message()
+            {
+                FromUserId = request.FromUserId,
+                ChatId = request.ChatId,
+                Content = request.Content,
+                IsRead = false,
+                SendDateTime = DateTime.UtcNow,
+            };
+
+            Message create = await _commands.CreateMessage(message);
+
+            MessageResponse response = new MessageResponse()
+            {
+                Id = create.Id,
+                Content = create.Content,
+                IsRead = create.IsRead,
+                SendDateTime = create.SendDateTime,
+                FromUserId = create.FromUserId,
+            };
+
+            return response;
+        }
+
+        public async Task<MessageResponse> UpdateIsReadMessage(int messageId)
+        {
+           Message messageUpdated =  await _commands.UpdateIsReadMessage(messageId);
+
+
+            MessageResponse response = new MessageResponse()
+            {
+                Id = messageId,
+                Content = messageUpdated.Content,
+                IsRead = messageUpdated.IsRead,
+                SendDateTime = DateTime.UtcNow,
+                FromUserId = messageUpdated.FromUserId,
+            };
+
+            return response;
         }
 
         public async Task<IEnumerable<MessageResponse>> GetMessages(int pageSize, int pageIndex, int chatId)

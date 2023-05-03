@@ -1,16 +1,10 @@
 ﻿
-using System.Text.Json;
+using Application.Reponsive;
 
 namespace Application.Interfaces
 {
     public interface IUserApiServices
     {
-        Task<bool> GetUserByAuthId(Guid AuthId);
-
-        string GetMessage();
-
-        JsonDocument GetResponse();
-
-        int GetStatusCode();
+        Task<UserResponse> GetUserById(int id);
     }
 }

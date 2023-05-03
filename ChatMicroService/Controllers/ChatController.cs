@@ -17,13 +17,15 @@ namespace Chat.Controllers
        
         private readonly IChatServices _chatServices;
         private readonly ITokenServices _tokenServices;
-        private readonly IMessageServices _messageServices;
-
-        public ChatController(IChatServices chatServices, ITokenServices tokenServices, IMessageServices messageServices)
+        private readonly IMessageQuery _messageServices;
+        private readonly IUserApiServices _userApiServices;
+        public ChatController(IChatServices chatServices, ITokenServices tokenServices, IMessageQuery messageServices,
+            IUserApiServices userApiServices)
         {
             _chatServices = chatServices;
             _tokenServices = tokenServices;
             _messageServices = messageServices;
+            _userApiServices = userApiServices;
         }
 
         [HttpPost]
@@ -41,19 +43,19 @@ namespace Chat.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetChatById([FromQuery] MessageInitalizeRequest request, int id)
+        public async Task<IActionResult> GetChatById([FromQuery] MessageInitalizeRequest request)
         {
             try
             {
                 // Ejemplo de uso del token
                 var identity = HttpContext.User.Identity as ClaimsIdentity;
 
-                var response = await _chatServices.GetChatById(id);
+                var response = await _chatServices.GetChatById(request.ChatId);
                 if (response == null)
                 {
-                    return new JsonResult(new { Message = $"No existe un chat con el id {id}" }) { StatusCode = 404 };
+                    return new JsonResult(new { Message = $"No existe un chat con el id {request.ChatId}" }) { StatusCode = 404 };
                 }
                 if ( !_tokenServices.ValidateUserId(identity,response.User1Id) & !_tokenServices.ValidateUserId(identity, response.User2Id))
                 {
@@ -72,7 +74,7 @@ namespace Chat.Controllers
                 {
                     PageSize = request.PageSize,
                     PageIndex = request.PageIndex,
-                    Messages = await _messageServices.GetMessages(request.PageSize, request.PageIndex, request.ChatId),
+                    Messages = await _messageServices.GetMessages(request.PageSize, request.PageIndex,request.ChatId),
                     TotalItems = await _messageServices.GetMessagesLong(request.ChatId)
                 };
                 return Ok(responses);
@@ -82,7 +84,6 @@ namespace Chat.Controllers
                 return new JsonResult(new {Message = ex.Message}) { StatusCode = 500};
             }
         }
-
         [HttpGet("me")]
         [Authorize]
         public async Task<IActionResult> GetMyChats()

@@ -1,7 +1,9 @@
 ﻿using Application.Interface;
+using Application.Interfaces;
 using Application.Models;
 using Application.Reponsive;
 using Domain.Entities;
+using System;
 
 namespace Application.UseCases
 {
@@ -9,11 +11,16 @@ namespace Application.UseCases
     {
         private readonly IChatCommands _commands;
         private readonly IChatQueries _queries;
+        private readonly IMessageQueries _queriesms;
+        private readonly IUserApiServices _userApiServices;
 
-        public ChatServices(IChatCommands commands, IChatQueries queries)
+        public ChatServices(IChatCommands commands, IChatQueries queries, IMessageQueries queriesms,IUserApiServices userApiServices)
         {
             _commands = commands;
             _queries = queries;
+            _queriesms = queriesms;
+            _userApiServices = userApiServices;
+            
         }
 
         public async Task<ChatResponse> CreateChat(ChatRequest request)
@@ -56,7 +63,7 @@ namespace Application.UseCases
                 {
                     Id = message.Id,
                     FromUserId = message.FromUserId,
-                    ChatId = message.Id,
+                    ChatId = message.ChatId,
                     //ToUserId = message.FromUserId == chat.UserId1 ? chat.UserId2 : chat.UserId1,
                     Content = message.Content,
                     SendDateTime = message.SendDateTime,
@@ -90,24 +97,28 @@ namespace Application.UseCases
 
             foreach (Chat chat in chats)
             {
-                MessageResponse messageResponse = new MessageResponse();
-
+                LastestMessage lastestmessage = new LastestMessage();
+                Paginacion pagina = new Paginacion();
+                var user = await _userApiServices.GetUserById(chat.UserId2);
                 if (chat.Messages.Count > 0)
                 {
-                    var message = chat.Messages[0];
-                    messageResponse.Id = message.Id;
-                    messageResponse.Content = message.Content;
-                    messageResponse.IsRead = message.IsRead;
-                    messageResponse.SendDateTime = message.SendDateTime;
-                    messageResponse.FromUserId = message.FromUserId;
-                   // messageResponse.ToUserId = message.FromUserId == chat.UserId1 ? chat.UserId2 : chat.UserId1;
+                    var message = chat.Messages[chat.Messages.Count - 1];
+                    lastestmessage.Content = message.Content;               
+                    lastestmessage.SendDateTime = message.SendDateTime;
+                    lastestmessage.IsRead = message.IsRead;
+
+                    var item = await _queriesms.GetListMessagesId(chat.Id);
+                    pagina.PageSize = 10;
+                    pagina.TotalPage = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(item.Count())/10));
+                    pagina.TotalItems = item.Count();
                 }
 
                 ChatSimpleResponse chatResponse = new ChatSimpleResponse()
                 {
                     ChatId = chat.Id,
-                    User2Id = chat.UserId1 == userId ? chat.UserId2 : chat.UserId1,
-                    LatestMesage = messageResponse.Id == 0 ? null : messageResponse,
+                    UserFriend = user,
+                    LatestMessage = lastestmessage.Content == null ? null : lastestmessage,
+                    Paginacion = pagina.TotalItems == 0 ? null:pagina,
                 };
  
                 response.Add(chatResponse);
@@ -115,5 +126,6 @@ namespace Application.UseCases
 
             return response;
         }
+
     }
 }

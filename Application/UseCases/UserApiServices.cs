@@ -1,64 +1,48 @@
 ﻿using Application.Interfaces;
+using Application.Reponsive;
+using Domain.Entities;
+using System.Net.Http;
 using System.Text.Json;
 
 namespace Application.UseCases
 {
     public class UserApiServices : IUserApiServices
     {
-        private string? _message;
-        private string? _response;
-        private int _statusCode;
-        private string? _url;
-        private HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public UserApiServices()
+        public UserApiServices(IHttpClientFactory httpClientFactory)
         {
-            _url = "https://localhost:7020/api/v1/User/Auth/";
-            var handler = new HttpClientHandler();
-            handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-            _httpClient = new HttpClient(handler);
+           _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<bool> GetUserByAuthId(Guid authId)
+        public async Task<UserResponse> GetUserById(int id)
         {
             try
             {
-                var responseUser = await _httpClient.GetAsync(_url + authId);
-                var responseContent = await responseUser.Content.ReadAsStringAsync();
-                var responseObject = JsonDocument.Parse(responseContent).RootElement;
+                UserResponse user = new UserResponse();
+                var httpClient = _httpClientFactory.CreateClient();
+                var responseUser = await httpClient.GetAsync("https://localhost:7020/api/v1/User/"+ id);
+               
+                if(responseUser.IsSuccessStatusCode)
+                { 
+                   var responseContent = await responseUser.Content.ReadAsStringAsync();
+                   var responseObject = JsonDocument.Parse(responseContent).RootElement;
+                   user.UserId = responseObject.GetProperty("userId").GetInt32();
+                   user.UserName = responseObject.GetProperty("name").ToString();
+                   user.LastName = responseObject.GetProperty("lastName").ToString();
+                   user.Images = responseObject.GetProperty("images").ToString();
+                   return user;
+                }
+                else 
+                { 
+                   return user;
+                }
 
-                _message = responseObject.GetProperty("message").GetString();
-                _response = responseObject.GetProperty("response").ToString();
-                _statusCode = (int)responseUser.StatusCode;
-
-                return responseUser.IsSuccessStatusCode;
             }
-            catch (System.Net.Http.HttpRequestException)
+            catch (HttpRequestException)
             {
-                _message = "Error en el microservicio de usuario";
-                _statusCode = 500;
-                return false;
+                return null;
             }
-        }
-
-        public string GetMessage()
-        {
-            return _message;
-        }
-
-        public JsonDocument GetResponse()
-        {
-            if (_response == null)
-            {
-                return JsonDocument.Parse("{}");
-            }
-
-            return JsonDocument.Parse(_response);
-        }
-
-        public int GetStatusCode()
-        {
-            return _statusCode;
         }
 
     }

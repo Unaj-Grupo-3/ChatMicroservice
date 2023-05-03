@@ -13,36 +13,6 @@ namespace Infrastructure.Queries
         {
             _chatAppContext = chatAppContext;
         }
-        public async Task<IEnumerable<LastestMessage>> GetLastestMessage(int userId)
-        {
-            var result = new List<LastestMessage>();
-
-            var userFriends = await _chatAppContext.Chats
-                .Where(x => x.UserId1 == userId || x.UserId2 == userId).ToListAsync();
-
-            foreach (var userFriend in userFriends)
-            {
-                //var lastMessage = await _chatAppContext.Message
-                //    .Where(x => x.FromUserId == userId && x.ToUserId == userFriend.FriendId
-                //             || x.FromUserId == userFriend.FriendId && x.ToUserId == userId)
-                //    .OrderByDescending(x => x.SendDateTime)
-                //    .FirstOrDefaultAsync();
-
-                //if (lastMessage != null)
-                //{
-                //    result.Add(new LastestMessage
-                //    {
-                //        UserId = userId,
-                //        Content = lastMessage.Content,
-                //        UserFriendInfo = _userFunction.GetUserById(userFriend.FriendId),
-                //        Id = lastMessage.Id,
-                //        IsRead = lastMessage.IsRead,
-                //        SendDateTime = lastMessage.SendDateTime
-                //    });
-                //}
-            }
-            return result;
-        }
         public async Task<IEnumerable<MessageResponse>> GetListMessagesId(int chatId)
         {
             var entities = await _chatAppContext.Messages
@@ -67,7 +37,7 @@ namespace Infrastructure.Queries
             var entities = await _chatAppContext.Messages
                 .Where(x => x.ChatId == chatId)
                 .OrderBy(c => c.SendDateTime)
-                .Skip(pageSize * pageIndex)
+                .Skip((pageIndex - 1)*pageSize)
                 .Take(pageSize).ToListAsync();
 
             return entities.Select(x => new MessageResponse
