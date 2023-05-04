@@ -6,6 +6,7 @@ using Application.Interfaces;
 using Application.Models;
 using Application.Reponsive;
 using Azure.Core;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Chat.Controllers
 {
@@ -44,7 +45,7 @@ namespace Chat.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetChatById([FromQuery] MessageInitalizeRequest request)
         {
             try
@@ -61,14 +62,13 @@ namespace Chat.Controllers
                 {
                     return new JsonResult(new { Message = "No esta autorizado a ver este chat" }) { StatusCode = 403 };
                 }
-                var userId = int.Parse(identity.Claims.FirstOrDefault(x => x.Type == "UserId").Value);
+                Guid userId = Guid.Parse(identity.Claims.FirstOrDefault(x => x.Type == "UserId").Value);
 
                 if (response.User1Id != userId)
                 {
                     response.User2Id = response.User1Id;
                     response.User1Id = userId;
                 }
-
 
                 var responses = new MessageInitalizeResponse
                 {
@@ -85,7 +85,7 @@ namespace Chat.Controllers
             }
         }
         [HttpGet("user")]
-        public async Task<IActionResult> GetAllListUsers([FromQuery] List<int> usersId)
+        public async Task<IActionResult> GetAllListUsers([FromQuery] List<Guid> usersId)
         {
             var result = await _userApiServices.GetUserById(usersId);
             return new JsonResult(result);
@@ -98,7 +98,7 @@ namespace Chat.Controllers
             {
                 // Ejemplo de uso del token
                 var identity = HttpContext.User.Identity as ClaimsIdentity;
-                int userId = int.Parse(identity.Claims.FirstOrDefault(x => x.Type == "UserId").Value);
+                Guid userId = Guid.Parse(identity.Claims.FirstOrDefault(x => x.Type == "UserId").Value);
 
                 var response = await _chatServices.GetChatsByUserId(userId);
 

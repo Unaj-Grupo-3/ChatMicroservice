@@ -32,18 +32,19 @@ namespace Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasDefaultValue(new DateTime(2023, 5, 4, 2, 31, 27, 800, DateTimeKind.Local).AddTicks(630));
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnUpdate()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 4, 29, 4, 48, 9, 738, DateTimeKind.Local).AddTicks(1225));
+                        .HasDefaultValue(new DateTime(2023, 5, 4, 2, 31, 27, 800, DateTimeKind.Local).AddTicks(1266));
 
-                    b.Property<int>("UserId1")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId1")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("UserId2")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId2")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -65,8 +66,8 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("FromUserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("FromUserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsRead")
                         .ValueGeneratedOnAdd()

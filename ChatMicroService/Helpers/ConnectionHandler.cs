@@ -2,6 +2,6 @@
 {
     public static class ConnectionHandler
     {
-        public static Dictionary<int,string> ConnectedIds = new Dictionary<int, string>();
+        public static Dictionary<Guid,string> ConnectedIds = new Dictionary<Guid, string>();
     }
 }

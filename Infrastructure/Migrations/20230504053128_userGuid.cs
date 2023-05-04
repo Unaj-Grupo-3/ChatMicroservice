@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class userGuid : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,10 +17,10 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId1 = table.Column<int>(type: "int", nullable: false),
-                    UserId2 = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 4, 29, 4, 48, 9, 738, DateTimeKind.Local).AddTicks(1225))
+                    UserId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId2 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 5, 4, 2, 31, 27, 800, DateTimeKind.Local).AddTicks(630)),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 5, 4, 2, 31, 27, 800, DateTimeKind.Local).AddTicks(1266))
                 },
                 constraints: table =>
                 {
@@ -33,7 +33,7 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FromUserId = table.Column<int>(type: "int", nullable: false),
+                    FromUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ChatId = table.Column<int>(type: "int", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SendDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),

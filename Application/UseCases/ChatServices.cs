@@ -84,15 +84,21 @@ namespace Application.UseCases
             return response;
         }
 
-        public async Task<IList<ChatSimpleResponse>> GetChatsByUserId(int userId)
+        public async Task<IList<ChatSimpleResponse>> GetChatsByUserId(Guid userId)
         {
-            List<int> ints = new List<int>();
+            List<Guid> userIds = new List<Guid>();
             IList<Chat> chats = await _queries.GetChatsByUserId(userId);
             foreach (Chat chat in chats)
             {
-                ints.Add(chat.UserId2);
+                if (userId == chat.UserId1)
+                {
+                    userIds.Add(chat.UserId2); 
+                } else
+                {
+                    userIds.Add(chat.UserId1);
+                }
             }
-            IList<UserResponse> users = await _userApiServices.GetUserById(ints);
+            IList<UserResponse> users = await _userApiServices.GetUserById(userIds);
             IList<ChatSimpleResponse> response = new List<ChatSimpleResponse>();
             if (chats.Count == 0)
             {

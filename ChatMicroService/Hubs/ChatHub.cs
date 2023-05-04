@@ -29,7 +29,7 @@ namespace ChatMicroService.Hubs
         {
             ClaimsPrincipal user = Context.User;
             Claim userIdClaim = user.FindFirst("UserId");
-            int userId = int.Parse(userIdClaim.Value);
+            Guid userId = Guid.Parse(userIdClaim.Value);
 
             string connectionId = Context.ConnectionId;
 
@@ -54,7 +54,7 @@ namespace ChatMicroService.Hubs
             // Ejemplo de uso del token
             ClaimsPrincipal user = Context.User;
             Claim userIdClaim = user.FindFirst("UserId");
-            int userId = int.Parse( userIdClaim.Value );
+            Guid userId = Guid.Parse( userIdClaim.Value );
 
             var responseChat = await _chatServices.GetChatById(chatId);
 

@@ -18,7 +18,7 @@ namespace Application.UseCases
         {
            _httpClientFactory = httpClientFactory;
         }
-        public async Task<List<UserResponse>> GetUserById(List<int> userIds)
+        public async Task<List<UserResponse>> GetUserById(List<Guid> userIds)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace Application.UseCases
                    foreach(var item in users)
                     {
                         UserResponse user = new UserResponse();
-                        user.UserId = item.GetProperty("userId").GetInt32();
+                        user.UserId = item.GetProperty("userId").GetGuid();
                         user.UserName = item.GetProperty("name").ToString();
                         user.LastName = item.GetProperty("lastName").ToString();
                         if(item.GetProperty("images").ToString().Count() > 5)

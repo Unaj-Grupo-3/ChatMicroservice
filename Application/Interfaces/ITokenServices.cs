@@ -6,7 +6,7 @@ namespace Application.Interfaces
 {
     public interface ITokenServices
     {
-        bool IsExpiredToken(ClaimsIdentity identity);
-        bool ValidateUserId(ClaimsIdentity identity, int userId);
+        bool ValidateUserId(ClaimsIdentity identity, Guid userId);
+        Guid GetUserId(ClaimsIdentity identity);
     }
 }
