@@ -25,15 +25,12 @@ namespace Infrastructure.Queries
                 Id = x.Id,
                 Content = x.Content,
                 FromUserId = x.FromUserId,
-                ChatId = x.ChatId,
                 SendDateTime = x.SendDateTime,
                 IsRead = x.IsRead,
             });
         }
         public async Task<IEnumerable<MessageResponse>> GetListMessages(int pageSize, int pageIndex, int chatId)
         {
-           // var entities = await _chatAppContext.Messages.OrderBy(x => x.SendDateTime).ToListAsync();
-            //.Where(x => x.FromUserId == fromUserId && x.FromUserId == toUserId|| x.FromUserId == toUserId && x.ToUserId == fromUserId)
             var entities = await _chatAppContext.Messages
                 .Where(x => x.ChatId == chatId)
                 .OrderBy(c => c.SendDateTime)
@@ -45,7 +42,6 @@ namespace Infrastructure.Queries
                 Id = x.Id,
                 Content = x.Content,
                 FromUserId = x.FromUserId,
-                ChatId = x.ChatId,
                 SendDateTime = x.SendDateTime,
                 IsRead = x.IsRead,
             });
