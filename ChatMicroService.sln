@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatMicroService", "ChatMicroService\ChatMicroService.csproj", "{6E0D0BB2-1AE6-4154-BEFA-BBC2DADC566A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatMicroService", "ChatMicroService\ChatMicroService.csproj", "{6E0D0BB2-1AE6-4154-BEFA-BBC2DADC566A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{2149F85B-1CD0-4453-BDA4-BDDFE35101B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{2149F85B-1CD0-4453-BDA4-BDDFE35101B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{EF4ED1FB-1006-4B38-AF85-148DF4C4DF37}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{EF4ED1FB-1006-4B38-AF85-148DF4C4DF37}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{582C5A40-73E8-4D64-A5AE-D25C72EC34C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{582C5A40-73E8-4D64-A5AE-D25C72EC34C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

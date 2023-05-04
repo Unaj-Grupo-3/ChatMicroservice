@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Net.Http;
 using System.Text.Json;
+using System.Xml.Linq;
 
 namespace Application.UseCases
 {
@@ -40,23 +41,22 @@ namespace Application.UseCases
 
                 if(responseUser.IsSuccessStatusCode)
                 { 
-                    //var responseObject = JsonDocument.Parse(responseContent).RootElement;
-                   var responseContent = await responseUser.Content.ReadAsStringAsync();
-                   List<JsonElement> users = JsonSerializer.Deserialize<List<JsonElement>>(responseContent);
-                   foreach(var item in users)
+                   var responseContent = await responseUser.Content.ReadAsStringAsync();                 
+                    JArray Array = JArray.Parse(responseContent);
+                   foreach (var item in Array) 
                     {
                         UserResponse user = new UserResponse();
-                        user.UserId = item.GetProperty("userId").GetInt32();
-                        user.UserName = item.GetProperty("name").ToString();
-                        user.LastName = item.GetProperty("lastName").ToString();
-                        if(item.GetProperty("images").ToString().Count() > 5)
-                        {
-                            JArray jArray = JArray.Parse(item.GetProperty("images").ToString());
-                            user.Images =  jArray[0].SelectToken("url").ToString();
+                        user.UserId = (int)item.SelectToken("userId");
+                        user.UserName = (string)item.SelectToken("name");
+                        user.LastName = (string)item.SelectToken("lastName");
+                        JArray jArrays = (JArray)item.SelectToken("images");
+                        if (!jArrays.IsNullOrEmpty())
+                        {                          
+                            user.Images = jArrays[0].SelectToken("url").ToString();
                         }
                         else
                         {
-                            user.Images = null; 
+                            user.Images = null;
                         }
                         listuser.Add(user);
                     }

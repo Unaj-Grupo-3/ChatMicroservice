@@ -63,8 +63,6 @@ namespace Application.UseCases
                 {
                     Id = message.Id,
                     FromUserId = message.FromUserId,
-                    ChatId = message.ChatId,
-                    //ToUserId = message.FromUserId == chat.UserId1 ? chat.UserId2 : chat.UserId1,
                     Content = message.Content,
                     SendDateTime = message.SendDateTime,
                     IsRead = message.IsRead,
@@ -90,7 +88,14 @@ namespace Application.UseCases
             IList<Chat> chats = await _queries.GetChatsByUserId(userId);
             foreach (Chat chat in chats)
             {
-                ints.Add(chat.UserId2);
+               if(chat.UserId1 == userId)
+                {
+                    ints.Add(chat.UserId2);
+                }
+               else
+                {
+                    ints.Add(chat.UserId1);
+                }
             }
             IList<UserResponse> users = await _userApiServices.GetUserById(ints);
             IList<ChatSimpleResponse> response = new List<ChatSimpleResponse>();
@@ -102,7 +107,7 @@ namespace Application.UseCases
             {
                 LastestMessage lastestmessage = new LastestMessage();
                 Paginacion pagina = new Paginacion();
-                var user = users.FirstOrDefault(s => s.UserId == chat.UserId2);
+                var user = users.FirstOrDefault(s => s.UserId == chat.UserId2 || s.UserId == chat.UserId1);
                 if (chat.Messages.Count > 0)
                 {
                     var message = chat.Messages[chat.Messages.Count - 1];
