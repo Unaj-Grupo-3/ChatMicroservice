@@ -4,8 +4,9 @@ namespace Application.Models
 {
     public class ChatSimpleResponse
     {
-        public int User2Id { get; set; }
         public int ChatId { get; set; }
-        public MessageResponse? LatestMessage { get; set; }
+        public UserResponse? UserFriend { get; set; }
+        public LastestMessage? LatestMessage { get; set; }
+        public Paginacion? Paginacion { get; set; }
     }
 }

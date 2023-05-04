@@ -2,10 +2,11 @@
 using Application.Models;
 using Application.Reponsive;
 using Domain.Entities;
+using Application.Reponsive;
 
 namespace Application.UseCases
 {
-    public class MessageServices : IMessageServices
+    public class MessageServices : IMessageQuery
     {
         private readonly IMessageCommands _commands;
         private readonly IMessageQueries _queries;
@@ -56,6 +57,27 @@ namespace Application.UseCases
             };
 
             return response;
+        }
+
+        public async Task<IEnumerable<MessageResponse>> GetMessages(int pageSize, int pageIndex, int chatId)
+        {
+           var messages =await _queries.GetListMessages(pageSize,pageIndex, chatId);
+            if (messages == null) messages = new List<MessageResponse>();
+            return messages;
+        }
+
+        public async Task<int> GetMessagesLong(int chatId)
+        { int count = 0;
+            var messages = await _queries.GetListMessagesId(chatId);
+            if (messages != null)
+            {
+                count = messages.Count();
+                return count;
+            }
+            else
+            {
+                return  count;
+            } 
         }
     }
 }

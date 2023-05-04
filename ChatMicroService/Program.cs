@@ -101,13 +101,16 @@ builder.Services.AddDbContext<ChatAppContext>(options =>
 
 builder.Services.AddTransient<IMessageCommands, MessageCommands>();
 builder.Services.AddTransient<IMessageQueries, MessageQueries>();
-builder.Services.AddTransient<IMessageServices, MessageServices>();
+builder.Services.AddTransient<IMessageQuery, MessageServices>();
 
 builder.Services.AddTransient<IChatCommands, ChatCommands>();
 builder.Services.AddTransient<IChatQueries, ChatQueries>();
 builder.Services.AddTransient<IChatServices, ChatServices>();
 
 builder.Services.AddTransient<ITokenServices, TokenServices>();
+   
+builder.Services.AddHttpClient();
+builder.Services.AddTransient<IUserApiServices, UserApiServices>();
 
 builder.Services.AddSignalR();
 
