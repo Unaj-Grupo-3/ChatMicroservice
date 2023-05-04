@@ -86,20 +86,23 @@ namespace Application.UseCases
 
         public async Task<IList<ChatSimpleResponse>> GetChatsByUserId(int userId)
         {
+            List<int> ints = new List<int>();
             IList<Chat> chats = await _queries.GetChatsByUserId(userId);
-
+            foreach (Chat chat in chats)
+            {
+                ints.Add(chat.UserId2);
+            }
+            IList<UserResponse> users = await _userApiServices.GetUserById(ints);
             IList<ChatSimpleResponse> response = new List<ChatSimpleResponse>();
-
             if (chats.Count == 0)
             {
                 return response;
             }
-
             foreach (Chat chat in chats)
             {
                 LastestMessage lastestmessage = new LastestMessage();
                 Paginacion pagina = new Paginacion();
-                var user = await _userApiServices.GetUserById(chat.UserId2);
+                var user = users.FirstOrDefault(s => s.UserId == chat.UserId2);
                 if (chat.Messages.Count > 0)
                 {
                     var message = chat.Messages[chat.Messages.Count - 1];

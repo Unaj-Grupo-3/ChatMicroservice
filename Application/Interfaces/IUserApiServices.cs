@@ -5,6 +5,6 @@ namespace Application.Interfaces
 {
     public interface IUserApiServices
     {
-        Task<UserResponse> GetUserById(int id);
+        Task<List<UserResponse>> GetUserById(List<int> userIds);
     }
 }

@@ -84,6 +84,12 @@ namespace Chat.Controllers
                 return new JsonResult(new {Message = ex.Message}) { StatusCode = 500};
             }
         }
+        [HttpGet("user")]
+        public async Task<IActionResult> GetAllListUsers([FromQuery] List<int> usersId)
+        {
+            var result = await _userApiServices.GetUserById(usersId);
+            return new JsonResult(result);
+        }
         [HttpGet("me")]
         [Authorize]
         public async Task<IActionResult> GetMyChats()
