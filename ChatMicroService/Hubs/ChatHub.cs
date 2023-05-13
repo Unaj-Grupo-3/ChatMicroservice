@@ -1,11 +1,8 @@
 ﻿using Application.Interface;
-using Application.Interfaces;
 using Application.Models;
 using Application.Reponsive;
 using ChatMicroService.Helpers;
-using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 
@@ -14,14 +11,12 @@ namespace ChatMicroService.Hubs
     public class ChatHub : Hub
     {
         private readonly IChatServices _chatServices;
-        private readonly ITokenServices _tokenServices;
         private readonly IMessageServices _messageServices;
 
-        public ChatHub(IChatServices chatServices, ITokenServices tokenServices, IMessageServices messageServices)
+        public ChatHub(IChatServices chatServices, IMessageServices messageServices)         
         {
-            _chatServices = chatServices;
-            _tokenServices = tokenServices;
-            _messageServices = messageServices;
+            _chatServices = chatServices;          
+            _messageServices = messageServices;      
         }
 
         [Authorize]
@@ -91,6 +86,12 @@ namespace ChatMicroService.Hubs
                 await Clients.Caller.SendAsync("ReceiveMessage", chatId, response);
             }
 
+        }
+
+        [Authorize]
+        public async Task reead(int Id)
+        {
+            await _messageServices.UpdateIsRead(Id);            
         }
     }
 }

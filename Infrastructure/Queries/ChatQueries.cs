@@ -21,7 +21,6 @@ namespace Infrastructure.Queries
 
             return chat;
         }
-
         public async Task<IList<Chat>> GetChatsByUserId(int userId)
         {
             IList<Chat> chats = await _context.Chats.Include(x => x.Messages.OrderBy(m => m.SendDateTime))

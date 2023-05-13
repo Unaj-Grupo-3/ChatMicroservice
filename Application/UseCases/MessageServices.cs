@@ -42,23 +42,10 @@ namespace Application.UseCases
             return response;
         }
 
-        public async Task<MessageResponse> UpdateIsReadMessage(int messageId)
+        public async Task UpdateIsRead(int Id)
         {
-           Message messageUpdated =  await _commands.UpdateIsReadMessage(messageId);
-
-
-            MessageResponse response = new MessageResponse()
-            {
-                Id = messageId,
-                Content = messageUpdated.Content,
-                IsRead = messageUpdated.IsRead,
-                SendDateTime = DateTime.UtcNow,
-                FromUserId = messageUpdated.FromUserId,
-            };
-
-            return response;
+           await _commands.UpdateIsReadMessage(Id);
         }
-
         public async Task<IEnumerable<MessageResponse>> GetMessages(int pageSize, int pageIndex, int chatId)
         {
            var messages =await _queries.GetListMessages(pageSize,pageIndex, chatId);

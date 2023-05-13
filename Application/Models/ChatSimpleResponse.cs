@@ -8,5 +8,6 @@ namespace Application.Models
         public UserResponse? UserFriend { get; set; }
         public LastestMessage? LatestMessage { get; set; }
         public Paginacion? Paginacion { get; set; }
+        public DateTime? Order { get; set; }
     }
 }
