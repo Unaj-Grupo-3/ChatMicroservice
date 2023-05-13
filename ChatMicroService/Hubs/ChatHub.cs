@@ -15,9 +15,9 @@ namespace ChatMicroService.Hubs
     {
         private readonly IChatServices _chatServices;
         private readonly ITokenServices _tokenServices;
-        private readonly IMessageQuery _messageServices;
+        private readonly IMessageServices _messageServices;
 
-        public ChatHub(IChatServices chatServices, ITokenServices tokenServices, IMessageQuery messageServices)
+        public ChatHub(IChatServices chatServices, ITokenServices tokenServices, IMessageServices messageServices)
         {
             _chatServices = chatServices;
             _tokenServices = tokenServices;
