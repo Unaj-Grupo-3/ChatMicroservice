@@ -2,7 +2,6 @@
 using Application.Models;
 using Application.Reponsive;
 using Domain.Entities;
-using Application.Reponsive;
 
 namespace Application.UseCases
 {

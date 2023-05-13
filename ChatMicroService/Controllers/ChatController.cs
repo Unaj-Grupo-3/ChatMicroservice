@@ -69,12 +69,15 @@ namespace Chat.Controllers
                     response.User1Id = userId;
                 }
                 List<int> idUser2 = new List<int> { response.User2Id };              
+                List<int> idUser1 = new List<int> { response.User1Id };  
+                
                 var responses = new MessageInitalizeResponse
                 {
                     PageSize = request.PageSize,
                     PageIndex = request.PageIndex,
                     TotalItems = await _messageServices.GetMessagesLong(request.ChatId),
                     ChatId = response.ChatId,
+                    UserMe = (await _userApiServices.GetUserById(idUser1))[0],
                     UserFriend = (await _userApiServices.GetUserById(idUser2))[0],
                     Messages = await _messageServices.GetMessages(request.PageSize, request.PageIndex, request.ChatId),
                     

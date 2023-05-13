@@ -1,8 +1,4 @@
-﻿
-
-using Application.Models;
-using Application.Reponsive;
-
+﻿using Application.Models;
 using Application.Reponsive;
 
 namespace Application.Interface

@@ -7,6 +7,7 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace ChatMicroService.Hubs
@@ -16,12 +17,15 @@ namespace ChatMicroService.Hubs
         private readonly IChatServices _chatServices;
         private readonly ITokenServices _tokenServices;
         private readonly IMessageQuery _messageServices;
+        private readonly IMessageCommands _messageCommands;
 
-        public ChatHub(IChatServices chatServices, ITokenServices tokenServices, IMessageQuery messageServices)
+
+        public ChatHub(IChatServices chatServices, ITokenServices tokenServices, IMessageQuery messageServices, IMessageCommands messageCommands)
         {
             _chatServices = chatServices;
             _tokenServices = tokenServices;
             _messageServices = messageServices;
+            _messageCommands = messageCommands;
         }
 
         [Authorize]
@@ -91,6 +95,12 @@ namespace ChatMicroService.Hubs
                 await Clients.Caller.SendAsync("ReceiveMessage", chatId, response);
             }
 
+        }
+
+        [Authorize]
+        public async Task reead(int Id)
+        {
+           await _messageCommands.UpdateIsReadMessage(Id);             
         }
     }
 }

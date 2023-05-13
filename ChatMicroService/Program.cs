@@ -108,7 +108,8 @@ builder.Services.AddTransient<IChatQueries, ChatQueries>();
 builder.Services.AddTransient<IChatServices, ChatServices>();
 
 builder.Services.AddTransient<ITokenServices, TokenServices>();
-   
+builder.Services.AddTransient<IChatCommands, ChatCommands>();
+
 builder.Services.AddHttpClient();
 builder.Services.AddTransient<IUserApiServices, UserApiServices>();
 

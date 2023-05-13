@@ -82,7 +82,7 @@ namespace Application.UseCases
             return response;
         }
 
-        public async Task<IList<ChatSimpleResponse>> GetChatsByUserId(int userId)
+        public async Task<UserChat> GetChatsByUserId(int userId)
         {
             List<int> ints = new List<int>();
             IList<Chat> chats = await _queries.GetChatsByUserId(userId);
@@ -101,20 +101,24 @@ namespace Application.UseCases
             IList<ChatSimpleResponse> response = new List<ChatSimpleResponse>();
             if (chats.Count == 0)
             {
-                return response;
+                return new UserChat();
             }
             foreach (Chat chat in chats)
             {
                 LastestMessage lastestmessage = new LastestMessage();
                 Paginacion pagina = new Paginacion();
+                DateTime order = DateTime.MinValue;
                 var user = users.FirstOrDefault(s => s.UserId == chat.UserId2 || s.UserId == chat.UserId1);
                 if (chat.Messages.Count > 0)
                 {
                     var message = chat.Messages[chat.Messages.Count - 1];
+                    lastestmessage.fromUserId = message.FromUserId;
                     lastestmessage.Content = message.Content;               
                     lastestmessage.SendDateTime = message.SendDateTime;
                     lastestmessage.IsRead = message.IsRead;
-
+                    
+                    order = message.SendDateTime;
+                   
                     var item = await _queriesms.GetListMessagesId(chat.Id);
                     pagina.PageSize = 10;
                     pagina.TotalPage = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(item.Count())/10));
@@ -127,12 +131,21 @@ namespace Application.UseCases
                     UserFriend = user,
                     LatestMessage = lastestmessage.Content == null ? null : lastestmessage,
                     Paginacion = pagina.TotalItems == 0 ? null:pagina,
+                    Order = order,
                 };
- 
+    
                 response.Add(chatResponse);
             }
+            IList<ChatSimpleResponse> too = response.OrderByDescending(x=> x.Order).ToList();
 
-            return response;
+            List<int> idUser1 = new List<int> { userId };
+            UserChat userChat = new UserChat()
+            {
+                UserMe = (await _userApiServices.GetUserById(idUser1))[0],
+                ListChat = too,
+            };
+               
+            return userChat;
         }
 
     }

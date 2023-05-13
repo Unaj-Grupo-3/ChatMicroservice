@@ -1,5 +1,6 @@
 ﻿using Application.Interface;
 using Application.Reponsive;
+using Domain.Entities;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,10 +30,10 @@ namespace Infrastructure.Queries
                 IsRead = x.IsRead,
             });
         }
-        public async Task<IEnumerable<MessageResponse>> GetListMessages(int pageSize, int pageIndex, int chatId)
-        {
+            public async Task<IEnumerable<MessageResponse>> GetListMessages(int pageSize, int pageIndex, int chatId)
+            {
             var entities = await _chatAppContext.Messages
-                .Where(x => x.ChatId == chatId)
+                .Where(x => x.ChatId == chatId)           
                 .OrderBy(c => c.SendDateTime)
                 .Skip((pageIndex - 1)*pageSize)
                 .Take(pageSize).ToListAsync();
