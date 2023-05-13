@@ -2,11 +2,11 @@
 using Application.Models;
 using Application.Reponsive;
 using Domain.Entities;
-using Application.Reponsive;
+
 
 namespace Application.UseCases
 {
-    public class MessageServices : IMessageQuery
+    public class MessageServices : IMessageServices
     {
         private readonly IMessageCommands _commands;
         private readonly IMessageQueries _queries;

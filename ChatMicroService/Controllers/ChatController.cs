@@ -17,9 +17,9 @@ namespace Chat.Controllers
        
         private readonly IChatServices _chatServices;
         private readonly ITokenServices _tokenServices;
-        private readonly IMessageQuery _messageServices;
+        private readonly IMessageServices _messageServices;
         private readonly IUserApiServices _userApiServices;
-        public ChatController(IChatServices chatServices, ITokenServices tokenServices, IMessageQuery messageServices,
+        public ChatController(IChatServices chatServices, ITokenServices tokenServices, IMessageServices messageServices,
             IUserApiServices userApiServices)
         {
             _chatServices = chatServices;

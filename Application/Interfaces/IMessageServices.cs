@@ -7,7 +7,7 @@ using Application.Reponsive;
 
 namespace Application.Interface
 {
-    public interface IMessageQuery
+    public interface IMessageServices
     {
         Task<MessageResponse> CreateMessage(MessageRequest request);
         Task<MessageResponse> UpdateIsReadMessage(int messageId);

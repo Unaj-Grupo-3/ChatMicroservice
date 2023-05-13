@@ -99,18 +99,18 @@ builder.Services.AddDbContext<ChatAppContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
-builder.Services.AddTransient<IMessageCommands, MessageCommands>();
-builder.Services.AddTransient<IMessageQueries, MessageQueries>();
-builder.Services.AddTransient<IMessageQuery, MessageServices>();
+builder.Services.AddScoped<IMessageCommands, MessageCommands>();
+builder.Services.AddScoped<IMessageQueries, MessageQueries>();
+builder.Services.AddScoped<IMessageServices, MessageServices>();
 
-builder.Services.AddTransient<IChatCommands, ChatCommands>();
-builder.Services.AddTransient<IChatQueries, ChatQueries>();
-builder.Services.AddTransient<IChatServices, ChatServices>();
+builder.Services.AddScoped<IChatCommands, ChatCommands>();
+builder.Services.AddScoped<IChatQueries, ChatQueries>();
+builder.Services.AddScoped<IChatServices, ChatServices>();
 
-builder.Services.AddTransient<ITokenServices, TokenServices>();
-   
-builder.Services.AddHttpClient();
-builder.Services.AddTransient<IUserApiServices, UserApiServices>();
+builder.Services.AddSingleton<ITokenServices, TokenServices>();
+
+builder.Services.AddHttpClient<IUserApiServices, UserApiServices>()
+       .Services.AddScoped<IUserApiServices, UserApiServices>();
 
 builder.Services.AddSignalR();
 
