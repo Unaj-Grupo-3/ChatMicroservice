@@ -1,23 +1,18 @@
 ﻿using Application.Interfaces;
-using Application.Models;
 using Application.Reponsive;
-using Domain.Entities;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Net.Http;
-using System.Text.Json;
-using System.Xml.Linq;
+
 
 namespace Application.UseCases
 {
     public class UserApiServices : IUserApiServices
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClient;
 
-        public UserApiServices(IHttpClientFactory httpClientFactory)
+        public UserApiServices(HttpClient httpClient)
         {
-           _httpClientFactory = httpClientFactory;
+           _httpClient = httpClient;
         }
         public async Task<List<UserResponse>> GetUserById(List<int> userIds)
         {
@@ -25,7 +20,7 @@ namespace Application.UseCases
             {
                 string urlusers = null;  
                 List<UserResponse> listuser = new List<UserResponse>();
-                var httpClient = _httpClientFactory.CreateClient();
+
                 foreach (var item in userIds)
                 {
                     if (item == userIds[0])
@@ -37,7 +32,7 @@ namespace Application.UseCases
                         urlusers +=  $"&usersId={item}";
                     }
                 }
-                var responseUser = await httpClient.GetAsync("https://localhost:7020/api/v1/User/userByIds/ids?" + urlusers);
+                var responseUser = await _httpClient.GetAsync("https://localhost:7020/api/v1/User/userByIds?" + urlusers);
 
                 if(responseUser.IsSuccessStatusCode)
                 { 
