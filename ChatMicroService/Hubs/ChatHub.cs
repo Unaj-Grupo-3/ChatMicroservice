@@ -46,6 +46,12 @@ namespace ChatMicroService.Hubs
         [Authorize]
         public async Task SendMessage(int chatId, string message)
         {
+            if (message == "" || message == null)
+            {
+                 await Clients.Caller.SendAsync("ErrorSendMessage", "Mensaje vacio");
+                 return;
+            }
+
             // Ejemplo de uso del token
             ClaimsPrincipal user = Context.User;
             Claim userIdClaim = user.FindFirst("UserId");
@@ -58,6 +64,7 @@ namespace ChatMicroService.Hubs
             if (userId != responseChat.User1Id & userId != responseChat.User2Id)
             {
                 await Clients.Caller.SendAsync("ErrorSendMessage", "No puede acceder a este chat");
+                return;
             }
 
             if (responseChat.User1Id != userId)
@@ -89,9 +96,44 @@ namespace ChatMicroService.Hubs
         }
 
         [Authorize]
-        public async Task reead(int Id)
+        public async Task ReadMessages(int chatId,IList<int> messageIds)
         {
-            await _messageServices.UpdateIsRead(Id);            
+            // Ejemplo de uso del token
+            ClaimsPrincipal user = Context.User;
+            Claim userIdClaim = user.FindFirst("UserId");
+            int userId = int.Parse(userIdClaim.Value);
+
+            var responseChat = await _chatServices.GetChatById(chatId);
+
+            // Que pasa si ingreso un id de un chat que no existe?
+
+            if (userId != responseChat.User1Id & userId != responseChat.User2Id)
+            {
+                await Clients.Caller.SendAsync("ErrorSendMessage", "No puede acceder a este chat");
+                return;
+            }
+
+            if (responseChat.User1Id != userId)
+            {
+                responseChat.User2Id = responseChat.User1Id;
+                responseChat.User1Id = userId;
+            }
+
+            IList<MessageSimple> messages = await _messageServices.GetMessageByListId(messageIds);
+            messages = messages.Where(x => x.ChatId == chatId && x.FromUserId != userId && !x.IsRead).ToList();
+
+            messageIds.Clear(); 
+
+            for (int i = 0; i < messages.Count; i++)
+            {
+                await _messageServices.UpdateIsRead(messages[i].Id);
+                messageIds.Add(messages[i].Id);
+            }
+
+            if (ConnectionHandler.ConnectedIds.ContainsKey(responseChat.User2Id))
+            {
+                await Clients.Client(ConnectionHandler.ConnectedIds[responseChat.User2Id]).SendAsync("MessagesAreRead", chatId, messageIds);
+            }
         }
     }
 }

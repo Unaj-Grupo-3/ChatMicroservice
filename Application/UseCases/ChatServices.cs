@@ -116,6 +116,7 @@ namespace Application.UseCases
                     lastestmessage.Content = message.Content;               
                     lastestmessage.SendDateTime = message.SendDateTime;
                     lastestmessage.IsRead = message.IsRead;
+                    lastestmessage.Id = message.Id;
                     
                     order = message.SendDateTime;
                    

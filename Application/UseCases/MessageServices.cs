@@ -3,7 +3,6 @@ using Application.Models;
 using Application.Reponsive;
 using Domain.Entities;
 
-
 namespace Application.UseCases
 {
     public class MessageServices : IMessageServices
@@ -46,6 +45,7 @@ namespace Application.UseCases
         {
            await _commands.UpdateIsReadMessage(Id);
         }
+
         public async Task<IEnumerable<MessageResponse>> GetMessages(int pageSize, int pageIndex, int chatId)
         {
            var messages =await _queries.GetListMessages(pageSize,pageIndex, chatId);
@@ -65,6 +65,11 @@ namespace Application.UseCases
             {
                 return  count;
             } 
+        }
+
+        public async Task<IList<MessageSimple>> GetMessageByListId(IEnumerable<int> ids)
+        {
+           return await _queries.GetMessageByListId(ids);
         }
     }
 }
