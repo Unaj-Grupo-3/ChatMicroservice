@@ -1,5 +1,6 @@
 ﻿
 
+using Application.Models;
 using Application.Reponsive;
 
 namespace Application.Interface
@@ -8,6 +9,6 @@ namespace Application.Interface
     {
         Task<IEnumerable<MessageResponse>> GetListMessages(int pageSize, int pageIndex, int chatId);
         Task<IEnumerable<MessageResponse>> GetListMessagesId(int chatId);
-
+        Task<IList<MessageSimple>> GetMessageByListId(IEnumerable<int> ids);
     }
 }

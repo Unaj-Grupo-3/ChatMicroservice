@@ -1,4 +1,5 @@
 ﻿using Application.Interface;
+using Application.Models;
 using Application.Reponsive;
 using Domain.Entities;
 using Infrastructure.Persistence;
@@ -30,8 +31,9 @@ namespace Infrastructure.Queries
                 IsRead = x.IsRead,
             });
         }
-            public async Task<IEnumerable<MessageResponse>> GetListMessages(int pageSize, int pageIndex, int chatId)
-            {
+
+        public async Task<IEnumerable<MessageResponse>> GetListMessages(int pageSize, int pageIndex, int chatId)
+        {
             var entities = await _chatAppContext.Messages
                 .Where(x => x.ChatId == chatId)           
                 .OrderBy(c => c.SendDateTime)
@@ -46,6 +48,19 @@ namespace Infrastructure.Queries
                 SendDateTime = x.SendDateTime,
                 IsRead = x.IsRead,
             });
+        }
+
+        public async Task<IList<MessageSimple>> GetMessageByListId(IEnumerable<int> ids)
+        {
+            var entities = await _chatAppContext.Messages.Where(x => ids.Contains(x.Id)).ToListAsync();
+
+            return entities.Select(x => new MessageSimple
+            {
+                Id = x.Id,
+                ChatId = x.ChatId,
+                FromUserId = x.FromUserId,
+                IsRead = x.IsRead,
+            }).ToList();
         }
     }
 }

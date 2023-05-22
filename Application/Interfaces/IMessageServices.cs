@@ -9,5 +9,6 @@ namespace Application.Interface
         Task UpdateIsRead(int Id);
         Task<IEnumerable<MessageResponse>> GetMessages(int pageSize, int pageIndex, int chatId);
         Task<int> GetMessagesLong(int chatId);
+        Task<IList<MessageSimple>> GetMessageByListId(IEnumerable<int> ids);
     }
 }
