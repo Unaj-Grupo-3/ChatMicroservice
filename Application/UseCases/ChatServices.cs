@@ -3,7 +3,7 @@ using Application.Interfaces;
 using Application.Models;
 using Application.Reponsive;
 using Domain.Entities;
-using System;
+
 
 namespace Application.UseCases
 {
@@ -85,6 +85,7 @@ namespace Application.UseCases
         public async Task<UserChat> GetChatsByUserId(int userId)
         {
             List<int> ints = new List<int>();
+            ints.Add(userId);
             IList<Chat> chats = await _queries.GetChatsByUserId(userId);
             foreach (Chat chat in chats)
             {
@@ -98,6 +99,7 @@ namespace Application.UseCases
                 }
             }
             IList<UserResponse> users = await _userApiServices.GetUserById(ints);
+           
             IList<ChatSimpleResponse> response = new List<ChatSimpleResponse>();
             if (chats.Count == 0)
             {
@@ -108,7 +110,7 @@ namespace Application.UseCases
                 LastestMessage lastestmessage = new LastestMessage();
                 Paginacion pagina = new Paginacion();
                 DateTime order = DateTime.MinValue;
-                var user = users.FirstOrDefault(s => s.UserId == chat.UserId2 || s.UserId == chat.UserId1);
+                var user = users.FirstOrDefault(s => (s.UserId == chat.UserId2 || s.UserId == chat.UserId1) && s.UserId != userId);
                 if (chat.Messages.Count > 0)
                 {
                     var message = chat.Messages[chat.Messages.Count - 1];
@@ -142,7 +144,7 @@ namespace Application.UseCases
             List<int> idUser1 = new List<int> { userId };
             UserChat userChat = new UserChat()
             {
-                UserMe = (await _userApiServices.GetUserById(idUser1))[0],
+                UserMe = users.FirstOrDefault(x => x.UserId == userId),
                 ListChat = too,
             };
                
