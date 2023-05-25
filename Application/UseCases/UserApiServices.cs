@@ -60,7 +60,7 @@ namespace Application.UseCases
                         user.UserId = (int)item.SelectToken("userId");
                         user.UserName = (string)item.SelectToken("name");
                         user.LastName = (string)item.SelectToken("lastName");
-                        user.Images = (string)item.SelectToken("images");
+                        user.Images = (string)item.SelectToken("image");
                         listuser.Add(user);
                     }
                     return listuser;
