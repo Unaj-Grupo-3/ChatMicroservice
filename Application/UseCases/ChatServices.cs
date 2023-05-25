@@ -99,7 +99,8 @@ namespace Application.UseCases
                 }
             }
             IList<UserResponse> users = await _userApiServices.GetUserById(ints);
-           
+            UserResponse userResponse = users.FirstOrDefault(x => x.UserId == userId);
+            users = users.Where(x => x.UserId != userId).ToList();
             IList<ChatSimpleResponse> response = new List<ChatSimpleResponse>();
             if (chats.Count == 0)
             {
@@ -110,7 +111,7 @@ namespace Application.UseCases
                 LastestMessage lastestmessage = new LastestMessage();
                 Paginacion pagina = new Paginacion();
                 DateTime order = DateTime.MinValue;
-                var user = users.FirstOrDefault(s => (s.UserId == chat.UserId2 || s.UserId == chat.UserId1) && s.UserId != userId);
+                var user = users.FirstOrDefault(s => s.UserId == chat.UserId2 || s.UserId == chat.UserId1);
                 if (chat.Messages.Count > 0)
                 {
                     var message = chat.Messages[chat.Messages.Count - 1];
@@ -144,7 +145,7 @@ namespace Application.UseCases
             List<int> idUser1 = new List<int> { userId };
             UserChat userChat = new UserChat()
             {
-                UserMe = users.FirstOrDefault(x => x.UserId == userId),
+                UserMe = userResponse,
                 ListChat = too,
             };
                
