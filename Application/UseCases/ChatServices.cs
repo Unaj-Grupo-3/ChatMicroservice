@@ -3,7 +3,7 @@ using Application.Interfaces;
 using Application.Models;
 using Application.Reponsive;
 using Domain.Entities;
-using System;
+
 
 namespace Application.UseCases
 {
@@ -85,6 +85,7 @@ namespace Application.UseCases
         public async Task<UserChat> GetChatsByUserId(int userId)
         {
             List<int> ints = new List<int>();
+            ints.Add(userId);
             IList<Chat> chats = await _queries.GetChatsByUserId(userId);
             foreach (Chat chat in chats)
             {
@@ -98,6 +99,8 @@ namespace Application.UseCases
                 }
             }
             IList<UserResponse> users = await _userApiServices.GetUserById(ints);
+            UserResponse userResponse = users.FirstOrDefault(x => x.UserId == userId);
+            users = users.Where(x => x.UserId != userId).ToList();
             IList<ChatSimpleResponse> response = new List<ChatSimpleResponse>();
             if (chats.Count == 0)
             {
@@ -142,7 +145,7 @@ namespace Application.UseCases
             List<int> idUser1 = new List<int> { userId };
             UserChat userChat = new UserChat()
             {
-                UserMe = (await _userApiServices.GetUserById(idUser1))[0],
+                UserMe = userResponse,
                 ListChat = too,
             };
                
