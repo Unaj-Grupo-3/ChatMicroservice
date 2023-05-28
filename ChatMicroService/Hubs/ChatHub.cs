@@ -2,6 +2,7 @@
 using Application.Models;
 using Application.Reponsive;
 using ChatMicroService.Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
@@ -19,7 +20,7 @@ namespace ChatMicroService.Hubs
             _messageServices = messageServices;      
         }
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task ConnectionOn()
         {
             ClaimsPrincipal user = Context.User;
@@ -43,7 +44,7 @@ namespace ChatMicroService.Hubs
             }   
         }
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task SendMessage(int chatId, string message)
         {
             if (message == "" || message == null)
@@ -95,7 +96,7 @@ namespace ChatMicroService.Hubs
 
         }
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task ReadMessages(int chatId,IList<int> messageIds)
         {
             // Ejemplo de uso del token

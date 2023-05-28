@@ -5,7 +5,6 @@ using System.Security.Claims;
 using Application.Interfaces;
 using Application.Models;
 using Application.Reponsive;
-using Presentation.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Chat.Controllers
@@ -33,15 +32,19 @@ namespace Chat.Controllers
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = ApiKeySchemeOptions.Scheme)]
         public async Task<IActionResult> CreateChat(ChatRequest request)
         {
             try
             {
                 var apikey = _configuration.GetSection("ApiKey").Get<string>();
-                var key = HttpContext.User.Identity.Name;
+                bool valid = HttpContext.Request.Headers.TryGetValue("X-API-KEY", out var key );
 
-                if (key!=null && key != apikey)
+                if (!valid)
+                {
+                   return Unauthorized();
+                }
+
+                if (valid && key.First() != apikey)
                 {
                     return new JsonResult(new { Message = "No se puede acceder. La Key es inválida" }) { StatusCode = 401 };
                 }
