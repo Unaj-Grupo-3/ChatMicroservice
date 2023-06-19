@@ -23,7 +23,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("CorsPolicy", builder =>
     {
         builder
-            .WithOrigins("http://127.0.0.1:5500") // Reemplaza esto con el origen correcto de tu solicitud
+            .WithOrigins("http://127.0.0.1:5501") // Reemplaza esto con el origen correcto de tu solicitud
+            .WithOrigins("http://127.0.0.1:5500")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
