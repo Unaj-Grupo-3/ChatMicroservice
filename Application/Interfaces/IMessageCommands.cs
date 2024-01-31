@@ -1,6 +1,4 @@
 ﻿
-using Application.Models;
-using Application.Reponsive;
 using Domain.Entities;
 
 namespace Application.Interface
