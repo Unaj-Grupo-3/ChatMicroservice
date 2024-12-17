@@ -1,7 +1,6 @@
 ﻿using Application.Interface;
 using Application.Models;
 using Application.Reponsive;
-using Domain.Entities;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
