@@ -1,7 +1,7 @@
 using Application.Interface;
 using Application.Models;
 using Application.Reponsive;
-using Chat.Controllers;
+using ChatMicroService.Controllers;
 using Application.Interfaces;
 
 using Microsoft.AspNetCore.Http;

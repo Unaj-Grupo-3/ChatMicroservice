@@ -7,11 +7,11 @@ using Application.Models;
 using Application.Reponsive;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
-namespace Chat.Controllers
+namespace  ChatMicroService.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-
+ 
     public class ChatController : Controller
     {
        
