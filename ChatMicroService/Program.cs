@@ -23,12 +23,18 @@ builder.Services.AddCors(options =>
     options.AddPolicy("CorsPolicy", builder =>
     {
         builder
-            .WithOrigins("http://127.0.0.1:5500") // Reemplaza esto con el origen correcto de tu solicitud
+            .WithOrigins("http://127.0.0.1:5500")
+            .WithOrigins("http://127.0.0.1:5501")
+            .WithOrigins("http://127.0.0.1:5502")
+            .WithOrigins("http://127.0.0.1:5503")
+            .WithOrigins("http://127.0.0.1:5504")// Reemplaza esto con el origen correcto de tu solicitud
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
     });
 });
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
