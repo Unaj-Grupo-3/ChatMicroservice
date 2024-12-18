@@ -9,6 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using Moq;
+using Azure;
+using System.Drawing;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Domain.Entities;
+using System;
+using Newtonsoft.Json.Linq;
 
 namespace Testchat1
 {
@@ -65,6 +71,8 @@ namespace Testchat1
         [Fact]
         public async Task CreateChat_ReturnsBadRequest_WhenRequestIsNull()
         {
+            //Propósito: Verificar que el controlador responde con un código 400 Bad Request
+            //cuando la solicitud enviada es nula.
             // Arrange
             _mockConfiguration.Setup(config => config.GetSection("ApiKey").Value).Returns("valid-api-key");
             SetupHttpContext("valid-api-key");
@@ -80,6 +88,8 @@ namespace Testchat1
         [Fact]
         public async Task CreateChat_ReturnsNotFound_WhenChatServiceReturnsNull()
         {
+            //Propósito: Verificar que el controlador responde con un código 404 Not Found
+            //si el servicio de chat devuelve un valor nulo.
             // Arrange
             var request = new ChatRequest();
             _mockConfiguration.Setup(config => config.GetSection("ApiKey").Value).Returns("valid-api-key");
@@ -98,6 +108,8 @@ namespace Testchat1
         [Fact]
         public async Task CreateChat_ReturnsUnauthorized_WhenApiKeyHeaderIsMissing()
         {
+            //Propósito: Verificar que el controlador responde con un código 401 Unauthorized
+            //si la cabecera X-API - KEY está ausente.
             // Arrange
             var request = new ChatRequest();
             _mockConfiguration.Setup(config => config.GetSection("ApiKey").Value).Returns("valid-api-key");
@@ -114,6 +126,8 @@ namespace Testchat1
         [Fact]
         public async Task CreateChat_ReturnsUnauthorized_WhenApiKeyIsInvalid()
         {
+            //Propósito: Verificar que el controlador responde con un código 401 Unauthorized
+            //si la cabecera X-API - KEY contiene un valor no válido.
             // Arrange
             var request = new ChatRequest();
             _mockConfiguration.Setup(config => config.GetSection("ApiKey").Value).Returns("valid-api-key");
@@ -131,6 +145,8 @@ namespace Testchat1
         [Fact]
         public async Task CreateChat_ReturnsInternalServerError_WhenExceptionIsThrown()
         {
+            //Propósito: Verificar que el controlador responde con un código 500 Internal Server Error
+            //si ocurre una excepción inesperada durante la creación del chat.
             // Arrange
             var request = new ChatRequest();
             _mockConfiguration.Setup(config => config.GetSection("ApiKey").Value).Returns("valid-api-key");
@@ -149,6 +165,8 @@ namespace Testchat1
         [Fact]
         public async Task CreateChat_ReturnsCreatedResult_WhenRequestIsValid()
         {
+            //Propósito: Verificar que el controlador responde con un código 201 Created
+            //cuando la solicitud es válida y se crea el chat correctamente.
             // Arrange
             var request = new ChatRequest();
             var chatResponse = new ChatResponse();
@@ -174,6 +192,8 @@ namespace Testchat1
         [Fact]
         public async Task GetChatById_ReturnsBadRequest_WhenPaginationValuesAreInvalid()
         {
+            // Propósito: Verificar que el controlador responde con un código 400 Bad Request
+            // cuando los valores de paginación son inválidos.
             // Arrange
             var request = new MessageInitalizeRequest { ChatId = 1, PageIndex = -1, PageSize = 0 };
             var chatResponse = new ChatResponse
@@ -198,6 +218,8 @@ namespace Testchat1
         [Fact]
         public async Task GetChatById_ReturnsBadRequest_WhenRequestIsInvalid()
         {
+            //Propósito: Verificar que el controlador responde con un código 400 Bad Request
+            //si la solicitud contiene un ChatId no válido.
             // Arrange
             var request = new MessageInitalizeRequest { ChatId = 0, PageIndex = 1, PageSize = 10 }; // ID no válido
             var chatResponse = new ChatResponse
@@ -221,6 +243,8 @@ namespace Testchat1
         [Fact]
         public async Task GetChatById_ReturnsUnauthorized_WhenUserIdIsMissingInToken()
         {
+            //Propósito: Verificar que el controlador responde con un código 401 Unauthorized
+            //si el token del usuario no incluye un UserId.
             // Arrange
             var request = new MessageInitalizeRequest { ChatId = 1, PageIndex = 0, PageSize = 10 };
 
@@ -238,6 +262,8 @@ namespace Testchat1
         [Fact]
         public async Task GetChatById_ReturnsForbidden_WhenUserIsNotInvolvedInChat()
         {
+            //Propósito: Verificar que el controlador responde con un código 403 Forbidden
+            //si el usuario autenticado no está involucrado en el chat solicitado.
             // Arrange
             var request = new MessageInitalizeRequest { ChatId = 1, PageIndex = 0, PageSize = 10 };
             var chatResponse = new ChatResponse
@@ -261,6 +287,8 @@ namespace Testchat1
         [Fact]
         public async Task GetChatById_ReturnsNotFound_WhenChatDoesNotExist()
         {
+            //Propósito: Verificar que el controlador responde con un código 404 Not Found
+            //si el chat solicitado no existe.
             // Arrange
             var request = new MessageInitalizeRequest { ChatId = 1 };
             _mockChatServices.Setup(service => service.GetChatById(request.ChatId)).ReturnsAsync((ChatResponse)null);
@@ -277,6 +305,8 @@ namespace Testchat1
         [Fact]
         public async Task GetChatById_ReturnsInternalServerError_WhenUserServiceFails()
         {
+            //Propósito: Verificar que el controlador responde con un código 500 Internal Server Error
+            //si el servicio de usuario falla al obtener información de los usuarios del chat.
             // Arrange
             var request = new MessageInitalizeRequest { ChatId = 1, PageIndex = 1, PageSize = 10 };
             var chatResponse = new ChatResponse
@@ -301,6 +331,8 @@ namespace Testchat1
         [Fact]
         public async Task GetChatById_ReturnsInternalServerError_WhenExceptionIsThrown()
         {
+            //Propósito: Verificar que el controlador responde con un código 500 Internal Server Error
+            //si ocurre una excepción inesperada.
             // Arrange
             var request = new MessageInitalizeRequest { ChatId = 1, PageIndex = 0, PageSize = 10 };
             _mockChatServices.Setup(service => service.GetChatById(It.IsAny<int>())).ThrowsAsync(new Exception("Database error"));
@@ -318,6 +350,8 @@ namespace Testchat1
         [Fact]
         public async Task GetChatById_ReturnsOk_WhenChatExistsAndUserHasAccess()
         {
+            // Propósito: Verificar que el controlador responde con un código 200 OK
+            // si el chat existe y el usuario autenticado tiene acceso.
             // Arrange
             var request = new MessageInitalizeRequest { ChatId = 1, PageIndex = 0, PageSize = 10 };
             var chatResponse = new ChatResponse
@@ -358,6 +392,8 @@ namespace Testchat1
         [Fact]
         public async Task GetMyChats_ReturnsBadRequest_WhenUserIdIsInvalid()
         {
+            // Propósito: Verificar que el controlador responde con un código 401 Unauthorized
+            // cuando el UserId en el token no es válido(no numérico).
             // Arrange
             SetupHttpContext(claims: new List<Claim> { new Claim("UserId", "invalid-id") }); // UserId no numérico
 
@@ -372,6 +408,8 @@ namespace Testchat1
         [Fact]
         public async Task GetMyChats_ReturnsUnauthorized_WhenUserIdIsMissingInToken()
         {
+            // Propósito: Verificar que el controlador responde con un código 401 Unauthorized
+            // si el token no contiene un UserId.
             // Arrange
             SetupHttpContext(claims: new List<Claim>()); // Sin UserId
 
@@ -386,6 +424,8 @@ namespace Testchat1
         [Fact]
         public async Task GetMyChats_ReturnsEmptyList_WhenUserHasNoChats()
         {
+            //Propósito: Verificar que el controlador devuelve una lista vacía cuando el usuario
+            //no tiene chats asociados.
             // Arrange
             var userId = 1;
             _mockChatServices.Setup(service => service.GetChatsByUserId(userId)).ReturnsAsync((UserChat)null);
@@ -403,6 +443,8 @@ namespace Testchat1
         [Fact]
         public async Task GetMyChats_ReturnsInternalServerError_WhenExceptionIsThrown()
         {
+            // Propósito: Verificar que el controlador responde con un código 500 Internal Server Error
+            // si ocurre una excepción inesperada al obtener los chats.
             // Arrange
             var userId = 1;
             _mockChatServices.Setup(service => service.GetChatsByUserId(userId)).ThrowsAsync(new Exception("Unexpected error"));
@@ -420,6 +462,8 @@ namespace Testchat1
         [Fact]
         public async Task GetMyChats_ReturnsOk_WhenChatsExist()
         {
+            // Propósito: Verificar que el controlador responde con un código 200 OK
+            // y devuelve la lista de chats cuando el usuario tiene chats disponibles.
             // Arrange
             var userId = 1;
             var userChat = new UserChat
